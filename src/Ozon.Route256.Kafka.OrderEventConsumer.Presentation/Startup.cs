@@ -19,7 +19,7 @@ public sealed class Startup
         services
             .AddLogging();
 
-        var connectionString = _configuration["ConnectionString"]!;
+        var connectionString = _configuration["ConnectionPostgresString"]!;
         services
             .AddFluentMigrator(
                 connectionString,
