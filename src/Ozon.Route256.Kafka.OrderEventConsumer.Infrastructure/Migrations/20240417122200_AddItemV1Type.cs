@@ -13,8 +13,7 @@ do $$
         if not exists (select 1 from pg_type where typname = 'item_v1') then
             create type item_v1 as
             (
-                  id         bigint
-                , item_id    bigint
+                  item_id    bigint
                 , created    bigint
                 , delivered  bigint
                 , cancelled  bigint
