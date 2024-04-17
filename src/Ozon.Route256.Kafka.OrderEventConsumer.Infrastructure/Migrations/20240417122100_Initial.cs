@@ -10,12 +10,12 @@ public sealed class Initial : SqlMigration
 {
     protected override string GetUpSql(IServiceProvider services) => @"
 create table if not exists items 
-(   item_id    bigint      not null
+(   id         bigint      generated always as identity
+  , item_id    bigint      not null primary key
   , created    bigint      not null
   , delivered  bigint      not null
   , cancelled  bigint      not null
-  , updated_at timestamp   not null
-  , constraint statuses_pk primary key (item_id));
+  , updated_at timestamp   not null);
 ";
 
     protected override string GetDownSql(IServiceProvider services) => @"
