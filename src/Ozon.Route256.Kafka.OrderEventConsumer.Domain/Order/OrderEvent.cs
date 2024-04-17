@@ -1,5 +1,4 @@
 ﻿using System;
-
 using Ozon.Route256.Kafka.OrderEventConsumer.Domain.ValueObjects;
 
 namespace Ozon.Route256.Kafka.OrderEventConsumer.Domain.Order;
