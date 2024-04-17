@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Ozon.Route256.Kafka.OrderEventConsumer.Domain;
-using Ozon.Route256.Kafka.OrderEventConsumer.Infrastructure;
 using Ozon.Route256.Kafka.OrderEventConsumer.Infrastructure.Common;
 using Ozon.Route256.Kafka.OrderEventConsumer.Infrastructure.Extensions;
 
@@ -18,16 +16,17 @@ public sealed class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services
-            .AddBllInfrastructure(_configuration)
+            .AddInfrastructureRepositories()
+            .AddInfrastructure(_configuration)
             .AddLogging();
 
         var connectionString = _configuration["ConnectionPostgresString"]!;
+        
         services
             .AddFluentMigrator(
                 connectionString,
                 typeof(SqlMigration).Assembly);
-
-        services.AddSingleton<IItemRepository, ItemRepository>(_ => new ItemRepository(connectionString));
+        
         services.AddSingleton<ItemHandler>();
         services.AddHostedService<KafkaBackgroundService>();
     }
