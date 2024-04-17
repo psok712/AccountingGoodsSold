@@ -4,7 +4,7 @@ using Ozon.Route256.Kafka.OrderEventConsumer.Infrastructure.Common;
 
 namespace Ozon.Route256.Postgres.Persistence.Migrations;
 
-[Migration(20240417122100, TransactionBehavior.None)]
+[Migration(20240417122200, TransactionBehavior.None)]
 public class AddItemV1Type : SqlMigration
 {
     protected override string GetUpSql(IServiceProvider services) => @"
@@ -16,7 +16,7 @@ do $$
                   item_id    bigint
                 , created    bigint
                 , delivered  bigint
-                , cancelled  bigint
+                , canceled   bigint
                 , created_at timestamp with time zone
             );
         end if;

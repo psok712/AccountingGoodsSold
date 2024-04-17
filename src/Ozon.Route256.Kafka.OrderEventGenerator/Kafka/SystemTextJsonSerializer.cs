@@ -1,5 +1,4 @@
 ﻿using System.Text.Json;
-
 using Confluent.Kafka;
 
 namespace Ozon.Route256.Kafka.OrderEventGenerator.Kafka;

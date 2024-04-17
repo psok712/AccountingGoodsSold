@@ -13,10 +13,10 @@ namespace Ozon.Route256.Kafka.OrderEventConsumer.Infrastructure.Kafka;
 
 public sealed class KafkaAsyncConsumer<TKey, TValue> : IDisposable
 {
-    private readonly int _channelCapacity;
     private readonly TimeSpan _bufferDelay;
 
     private readonly Channel<ConsumeResult<TKey, TValue>> _channel;
+    private readonly int _channelCapacity;
     private readonly IConsumer<TKey, TValue> _consumer;
     private readonly IHandler<TKey, TValue> _handler;
 
@@ -34,7 +34,7 @@ public sealed class KafkaAsyncConsumer<TKey, TValue> : IDisposable
     {
         _channelCapacity = kafkaConsumerOptions.Value.ChannelCapacity;
         _bufferDelay = TimeSpan.FromSeconds(kafkaConsumerOptions.Value.BufferDelaySecond);
-        
+
         var builder = new ConsumerBuilder<TKey, TValue>(
             new ConsumerConfig
             {
@@ -45,15 +45,9 @@ public sealed class KafkaAsyncConsumer<TKey, TValue> : IDisposable
                 EnableAutoOffsetStore = false
             });
 
-        if (keyDeserializer is not null)
-        {
-            builder.SetKeyDeserializer(keyDeserializer);
-        }
+        if (keyDeserializer is not null) builder.SetKeyDeserializer(keyDeserializer);
 
-        if (valueDeserializer is not null)
-        {
-            builder.SetValueDeserializer(valueDeserializer);
-        }
+        if (valueDeserializer is not null) builder.SetValueDeserializer(valueDeserializer);
 
         _handler = handler;
         _logger = logger;
@@ -69,6 +63,11 @@ public sealed class KafkaAsyncConsumer<TKey, TValue> : IDisposable
 
         _consumer = builder.Build();
         _consumer.Subscribe(topic);
+    }
+
+    public void Dispose()
+    {
+        _consumer.Close();
     }
 
     public Task Consume(CancellationToken token)
@@ -107,10 +106,7 @@ public sealed class KafkaAsyncConsumer<TKey, TValue> : IDisposable
                         r => r.Partition.Value,
                         (_, f) => f.MaxBy(p => p.Offset.Value));
 
-                foreach (var partitionLastOffset in partitionLastOffsets)
-                {
-                    _consumer.StoreOffset(partitionLastOffset);
-                }
+                foreach (var partitionLastOffset in partitionLastOffsets) _consumer.StoreOffset(partitionLastOffset);
 
                 break; // TODO: Polly.Retry
             }
@@ -132,6 +128,4 @@ public sealed class KafkaAsyncConsumer<TKey, TValue> : IDisposable
 
         _channel.Writer.Complete();
     }
-
-    public void Dispose() => _consumer.Close();
 }

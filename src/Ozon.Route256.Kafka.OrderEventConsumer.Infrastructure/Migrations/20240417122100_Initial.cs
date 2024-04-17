@@ -13,7 +13,7 @@ create table if not exists items
 (   item_id    bigint      not null primary key
   , created    bigint      not null
   , delivered  bigint      not null
-  , cancelled  bigint      not null
+  , canceled   bigint      not null
   , updated_at timestamp   not null);
 ";
 

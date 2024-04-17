@@ -17,7 +17,7 @@ public class KafkaBackgroundService : BackgroundService
     private readonly ILogger<KafkaBackgroundService> _logger;
 
     public KafkaBackgroundService(
-        IServiceProvider serviceProvider, 
+        IServiceProvider serviceProvider,
         ILogger<KafkaBackgroundService> logger,
         IOptions<KafkaOptions> kafkaOptions,
         IOptions<KafkaConsumerOptions> kafkaConsumerOptions)

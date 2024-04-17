@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Reflection;
-
 using FluentMigrator.Runner;
 using FluentMigrator.Runner.Processors;
-
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Ozon.Route256.Kafka.OrderEventConsumer.Infrastructure.Common;

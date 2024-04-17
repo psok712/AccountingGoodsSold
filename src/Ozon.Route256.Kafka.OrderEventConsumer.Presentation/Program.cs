@@ -1,11 +1,8 @@
 ﻿using System;
-
 using FluentMigrator.Runner;
-
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-
 using Ozon.Route256.Kafka.OrderEventConsumer.Presentation;
 
 var host = Host

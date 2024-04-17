@@ -12,7 +12,10 @@ public sealed class Startup
 {
     private readonly IConfiguration _configuration;
 
-    public Startup(IConfiguration configuration) => _configuration = configuration;
+    public Startup(IConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
 
     public void ConfigureServices(IServiceCollection services)
     {
@@ -23,12 +26,12 @@ public sealed class Startup
             .AddLogging();
 
         var connectionString = _configuration["ConnectionPostgresString"]!;
-        
+
         services
             .AddFluentMigrator(
                 connectionString,
                 typeof(SqlMigration).Assembly);
-        
+
         services.AddSingleton<ItemHandler>();
         services.AddHostedService<KafkaBackgroundService>();
     }

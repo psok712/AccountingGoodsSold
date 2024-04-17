@@ -23,15 +23,9 @@ internal sealed class KafkaPublisher<TKey, TValue> : IDisposable
                 LingerMs = 5
             });
 
-        if (keySerializer is not null)
-        {
-            builder.SetKeySerializer(keySerializer);
-        }
+        if (keySerializer is not null) builder.SetKeySerializer(keySerializer);
 
-        if (valueSerializer is not null)
-        {
-            builder.SetValueSerializer(valueSerializer);
-        }
+        if (valueSerializer is not null) builder.SetValueSerializer(valueSerializer);
 
         _producer = builder.Build();
     }
@@ -69,7 +63,7 @@ internal sealed class KafkaPublisher<TKey, TValue> : IDisposable
         var completionSource = new TaskCompletionSource<bool>();
         await using var registration = token.Register(() => completionSource.TrySetCanceled(token));
 
-        int messagesInQueue = 1;
+        var messagesInQueue = 1;
 
         foreach (var (key, value) in messages)
         {
