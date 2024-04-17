@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Ozon.Route256.Kafka.OrderEventConsumer.Domain;
 using Ozon.Route256.Kafka.OrderEventConsumer.Infrastructure;
 using Ozon.Route256.Kafka.OrderEventConsumer.Infrastructure.Common;
+using Ozon.Route256.Kafka.OrderEventConsumer.Infrastructure.Extensions;
 
 namespace Ozon.Route256.Kafka.OrderEventConsumer.Presentation;
 
@@ -17,6 +18,7 @@ public sealed class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services
+            .AddBllInfrastructure(_configuration)
             .AddLogging();
 
         var connectionString = _configuration["ConnectionPostgresString"]!;

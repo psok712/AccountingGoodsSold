@@ -5,14 +5,16 @@ using System.Threading.Channels;
 using System.Threading.Tasks;
 using Confluent.Kafka;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Ozon.Route256.Kafka.OrderEventConsumer.Domain.Common;
+using Ozon.Route256.Kafka.OrderEventConsumer.Infrastructure.Settings;
 
 namespace Ozon.Route256.Kafka.OrderEventConsumer.Infrastructure.Kafka;
 
 public sealed class KafkaAsyncConsumer<TKey, TValue> : IDisposable
 {
-    private const int ChannelCapacity = 10; // TODO: IOptions
-    private readonly TimeSpan _bufferDelay = TimeSpan.FromSeconds(1); // TODO: IOptions
+    private readonly int _channelCapacity;
+    private readonly TimeSpan _bufferDelay;
 
     private readonly Channel<ConsumeResult<TKey, TValue>> _channel;
     private readonly IConsumer<TKey, TValue> _consumer;
@@ -27,8 +29,12 @@ public sealed class KafkaAsyncConsumer<TKey, TValue> : IDisposable
         string topic,
         IDeserializer<TKey>? keyDeserializer,
         IDeserializer<TValue>? valueDeserializer,
-        ILogger<KafkaAsyncConsumer<TKey, TValue>> logger)
+        ILogger<KafkaAsyncConsumer<TKey, TValue>> logger,
+        IOptions<KafkaConsumerOptions> kafkaConsumerOptions)
     {
+        _channelCapacity = kafkaConsumerOptions.Value.ChannelCapacity;
+        _bufferDelay = TimeSpan.FromSeconds(kafkaConsumerOptions.Value.BufferDelaySecond);
+        
         var builder = new ConsumerBuilder<TKey, TValue>(
             new ConsumerConfig
             {
@@ -53,7 +59,7 @@ public sealed class KafkaAsyncConsumer<TKey, TValue> : IDisposable
         _logger = logger;
 
         _channel = Channel.CreateBounded<ConsumeResult<TKey, TValue>>(
-            new BoundedChannelOptions(ChannelCapacity)
+            new BoundedChannelOptions(_channelCapacity)
             {
                 SingleWriter = true,
                 SingleReader = true,
@@ -79,7 +85,7 @@ public sealed class KafkaAsyncConsumer<TKey, TValue> : IDisposable
 
         await foreach (var consumeResults in _channel.Reader
                            .ReadAllAsync(token)
-                           .Buffer(ChannelCapacity, _bufferDelay)
+                           .Buffer(_channelCapacity, _bufferDelay)
                            .WithCancellation(token))
         {
             token.ThrowIfCancellationRequested();
