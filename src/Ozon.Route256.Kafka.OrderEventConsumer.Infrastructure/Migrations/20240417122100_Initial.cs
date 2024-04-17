@@ -9,15 +9,16 @@ namespace Ozon.Route256.Postgres.Persistence.Migrations;
 public sealed class Initial : SqlMigration
 {
     protected override string GetUpSql(IServiceProvider services) => @"
-create table if not exists goods_accounting 
-(   id                     bigserial   not null 
-  , status                 text        not null
-  , amount                 bigint      not null
-  , update_at              timestamptz null
-  , CONSTRAINT statuses_pk primary key (id));
+create table if not exists items 
+(   item_id    bigint      not null
+  , created    bigint      not null
+  , delivered  bigint      not null
+  , cancelled  bigint      not null
+  , updated_at timestamp   not null
+  , constraint statuses_pk primary key (item_id));
 ";
 
     protected override string GetDownSql(IServiceProvider services) => @"
-drop table if exists goods_accounting;
+drop table if exists items;
 ";
 }
