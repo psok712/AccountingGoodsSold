@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Ozon.Route256.Kafka.OrderEventConsumer.Infrastructure\Ozon.Route256.Kafka.OrderEventConsumer.Infrastructure.csproj" />
+    <ProjectReference Include="..\Ozon.Route256.Kafka.OrderEventConsumer.Utils\Ozon.Route256.Kafka.OrderEventConsumer.Utils.csproj" />
   </ItemGroup>
 
 </Project>
