@@ -12,5 +12,6 @@
     <PackageReference Include="FluentMigrator.Runner" />
     <PackageReference Include="FluentMigrator.Runner.Postgres" />
     <PackageReference Include="Microsoft.Extensions.Options" />
+    <PackageReference Include="Npgsql.DependencyInjection" />
   </ItemGroup>
 </Project>
