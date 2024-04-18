@@ -17,20 +17,21 @@ public sealed class ItemRepository(
 {
     private const int DefaultTimeoutInSeconds = 5;
 
-    public async Task Add(ItemEntityV1 item, CancellationToken token)
+    public async Task AddIfNotExist(long itemId, CancellationToken token)
     {
         const string sqlQuery = @"
 insert into items (item_id, created, delivered, canceled, updated_at) 
-select item_id, created, delivered, canceled, updated_at
-  from UNNEST(@Item);
+select @ItemId, 0, 0, 0, @UpdatedAt
+    on conflict (item_id) do nothing;
 ";
 
+        var @params = new DynamicParameters();
+        @params.Add("ItemId", itemId);
+        @params.Add("UpdatedAt", dateTimeOffsetProvider.UtcNow);
+        
         await using var connection = await dataSource.OpenConnectionAsync(token);
         await connection.QueryAsync<long>(
-            new CommandDefinition(
-                sqlQuery,
-                item,
-                cancellationToken: token));
+            new CommandDefinition(sqlQuery, @params, cancellationToken: token));
     }
 
     public async Task<ItemEntityV1> Get(long itemId, CancellationToken token)
@@ -38,16 +39,16 @@ select item_id, created, delivered, canceled, updated_at
         const string sqlQuery = @"
 select *
   from items
-where item_id = @ItemId
+ where item_id = @ItemId
 ";
 
         var @params = new DynamicParameters();
-        @params.Add("TaskId", itemId);
+        @params.Add("ItemId", itemId);
 
 
         var cmd = new CommandDefinition(
             sqlQuery,
-            itemId,
+            @params,
             commandTimeout: DefaultTimeoutInSeconds,
             cancellationToken: token);
 
@@ -55,22 +56,65 @@ where item_id = @ItemId
         return (await connection.QueryAsync<ItemEntityV1>(cmd)).First();
     }
 
-    public async Task Update(ItemEntityV1 updateModel, CancellationToken token)
+    public async Task IncCreated(long itemId, CancellationToken token)
     {
         const string sqlQuery = @"
 update items
-set created = @Created, canceled = @Canceled, delivered = @Delivered, updated_at = @UpdatedAt
-where item_id = @ItemId;
+   set created = created + 1
+     , updated_at = @UpdateAt
+ where item_id = @ItemId
 ";
-
         var @params = new DynamicParameters();
-        @params.Add("ItemId", updateModel.ItemId);
-        @params.Add("Created", updateModel.Created);
-        @params.Add("Canceled", updateModel.Canceled);
-        @params.Add("Delivered", updateModel.Delivered);
-        @params.Add("Delivered", dateTimeOffsetProvider.UtcNow);
-
+        @params.Add("UpdateAt", dateTimeOffsetProvider.UtcNow);
+        @params.Add("ItemId", itemId);
+        
         await using var connection = await dataSource.OpenConnectionAsync(token);
-        await connection.ExecuteAsync(sqlQuery, @params);
+        await connection.QueryAsync<long>(
+            new CommandDefinition(
+                sqlQuery,   
+                @params,
+                cancellationToken: token));
+    }
+
+    public async Task IncCanceled(long itemId, CancellationToken token)
+    {
+        const string sqlQuery = @"
+update items
+   set created = created - 1
+     , canceled = canceled + 1
+     , updated_at = @UpdateAt
+ where item_id = @ItemId
+";
+        var @params = new DynamicParameters();
+        @params.Add("UpdateAt", dateTimeOffsetProvider.UtcNow);
+        @params.Add("ItemId", itemId);
+        
+        await using var connection = await dataSource.OpenConnectionAsync(token);
+        await connection.QueryAsync<long>(
+            new CommandDefinition(
+                sqlQuery,   
+                @params,
+                cancellationToken: token));
+    }
+
+    public async Task IncDelivered(long itemId, CancellationToken token)
+    {
+        const string sqlQuery = @"
+update items
+   set created = created - 1
+     , delivered = items.delivered + 1
+     , updated_at = @UpdateAt
+ where item_id = @ItemId
+";
+        var @params = new DynamicParameters();
+        @params.Add("UpdateAt", dateTimeOffsetProvider.UtcNow);
+        @params.Add("ItemId", itemId);
+        
+        await using var connection = await dataSource.OpenConnectionAsync(token);
+        await connection.QueryAsync<long>(
+            new CommandDefinition(
+                sqlQuery,   
+                @params,
+                cancellationToken: token));
     }
 }
