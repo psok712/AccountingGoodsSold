@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ozon.Route256.Kafka.OrderEv
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ozon.Route256.Kafka.OrderEventConsumer.Utils", "src\Ozon.Route256.Kafka.OrderEventConsumer.Utils\Ozon.Route256.Kafka.OrderEventConsumer.Utils.csproj", "{B17C85E7-46E7-4349-B4CB-8BABE8B60B78}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ozon.Route256.Kafka.OrderEventConsumer.IntegrationTests", "Ozon.Route256.Kafka.OrderEventConsumer.IntegrationTests\Ozon.Route256.Kafka.OrderEventConsumer.IntegrationTests.csproj", "{347D1A3A-EAA6-4C35-9532-091B986825D9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +51,10 @@ Global
 		{B17C85E7-46E7-4349-B4CB-8BABE8B60B78}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B17C85E7-46E7-4349-B4CB-8BABE8B60B78}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B17C85E7-46E7-4349-B4CB-8BABE8B60B78}.Release|Any CPU.Build.0 = Release|Any CPU
+		{347D1A3A-EAA6-4C35-9532-091B986825D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{347D1A3A-EAA6-4C35-9532-091B986825D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{347D1A3A-EAA6-4C35-9532-091B986825D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{347D1A3A-EAA6-4C35-9532-091B986825D9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{13551DB2-CCA4-4488-B001-AFED814C63FE} = {F769AE4F-2AA0-4204-99B0-DEAF18BFCFCC}
@@ -56,5 +62,6 @@ Global
 		{EF6F18C1-F01F-4E71-995E-8A79E849ADEB} = {F769AE4F-2AA0-4204-99B0-DEAF18BFCFCC}
 		{7A04D667-814D-4D93-A2AC-A35D7A047DBF} = {F769AE4F-2AA0-4204-99B0-DEAF18BFCFCC}
 		{B17C85E7-46E7-4349-B4CB-8BABE8B60B78} = {F769AE4F-2AA0-4204-99B0-DEAF18BFCFCC}
+		{347D1A3A-EAA6-4C35-9532-091B986825D9} = {2B185019-54A5-4DB0-88AB-11EC9ED77E9F}
 	EndGlobalSection
 EndGlobal
