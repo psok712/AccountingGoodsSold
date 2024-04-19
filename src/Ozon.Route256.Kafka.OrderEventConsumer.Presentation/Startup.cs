@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Ozon.Route256.Kafka.OrderEventConsumer.Infrastructure.Common;
 using Ozon.Route256.Kafka.OrderEventConsumer.Infrastructure.Extensions;
+using Ozon.Route256.Kafka.OrderEventConsumer.Presentation.Extensions;
 using Utils.Extensions;
 
 namespace Ozon.Route256.Kafka.OrderEventConsumer.Presentation;
@@ -20,6 +21,8 @@ public sealed class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services
+            .AddKafkaService()
+            .AddKafkaItemHandler()
             .AddUtils()
             .AddInfrastructureRepositories()
             .AddInfrastructure(_configuration)
@@ -32,7 +35,6 @@ public sealed class Startup
                 connectionString,
                 typeof(SqlMigration).Assembly);
 
-        services.AddSingleton<ItemHandler>();
         services.AddHostedService<KafkaBackgroundService>();
     }
 
