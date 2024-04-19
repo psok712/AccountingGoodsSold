@@ -17,9 +17,9 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddItemService(this IServiceCollection services)
+    public static IServiceCollection AddKafkaService(this IServiceCollection services)
     {
-        services.AddSingleton<IItemService, ItemService>();
+        services.AddSingleton<IKafkaService, KafkaService>();
 
         return services;
     }
@@ -27,6 +27,7 @@ public static class ServiceCollectionExtensions
     private static void AddPostgresRepositories(IServiceCollection services)
     {
         services.AddSingleton<IItemRepository, ItemRepository>();
+        services.AddSingleton<ISalesRepository, SalesRepository>();
     }
 
     public static IServiceCollection AddInfrastructure(
