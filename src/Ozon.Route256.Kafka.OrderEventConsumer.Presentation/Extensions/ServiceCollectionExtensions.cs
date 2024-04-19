@@ -1,7 +1,7 @@
 using Confluent.Kafka;
 using Microsoft.Extensions.DependencyInjection;
-using Ozon.Route256.Kafka.OrderEventConsumer.Domain.OrderProduce;
 using Ozon.Route256.Kafka.OrderEventConsumer.Infrastructure.Kafka;
+using Ozon.Route256.Kafka.OrderEventConsumer.Infrastructure.OrderProduce;
 
 namespace Ozon.Route256.Kafka.OrderEventConsumer.Presentation.Extensions;
 

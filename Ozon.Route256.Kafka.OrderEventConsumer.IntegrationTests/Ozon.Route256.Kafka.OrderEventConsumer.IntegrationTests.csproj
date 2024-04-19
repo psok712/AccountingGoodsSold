@@ -10,12 +10,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AutoBogus" />
+        <PackageReference Include="AutoBogus"/>
         <PackageReference Include="coverlet.collector" Version="6.0.0"/>
-        <PackageReference Include="FluentAssertions" />
-        <PackageReference Include="Microsoft.Extensions.Hosting" />
+        <PackageReference Include="FluentAssertions"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting"/>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0"/>
-        <PackageReference Include="Moq" />
+        <PackageReference Include="Moq"/>
         <PackageReference Include="xunit" Version="2.5.3"/>
         <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3"/>
     </ItemGroup>
@@ -25,9 +25,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\src\Ozon.Route256.Kafka.OrderEventConsumer.Domain\Ozon.Route256.Kafka.OrderEventConsumer.Domain.csproj" />
-      <ProjectReference Include="..\src\Ozon.Route256.Kafka.OrderEventConsumer.Infrastructure\Ozon.Route256.Kafka.OrderEventConsumer.Infrastructure.csproj" />
-      <ProjectReference Include="..\src\Ozon.Route256.Kafka.OrderEventConsumer.Utils\Ozon.Route256.Kafka.OrderEventConsumer.Utils.csproj" />
+        <ProjectReference Include="..\src\Ozon.Route256.Kafka.OrderEventConsumer.Domain\Ozon.Route256.Kafka.OrderEventConsumer.Domain.csproj"/>
+        <ProjectReference Include="..\src\Ozon.Route256.Kafka.OrderEventConsumer.Infrastructure\Ozon.Route256.Kafka.OrderEventConsumer.Infrastructure.csproj"/>
+        <ProjectReference Include="..\src\Ozon.Route256.Kafka.OrderEventConsumer.Utils\Ozon.Route256.Kafka.OrderEventConsumer.Utils.csproj"/>
     </ItemGroup>
 
     <ItemGroup>

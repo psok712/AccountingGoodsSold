@@ -1,7 +1,7 @@
 using System;
 using Ozon.Route256.Kafka.OrderEventConsumer.Domain.Enums;
 
-namespace Ozon.Route256.Kafka.OrderEventConsumer.Domain.OrderProduce;
+namespace Ozon.Route256.Kafka.OrderEventConsumer.Infrastructure.OrderProduce;
 
 public sealed record OrderEventProduce(
     long OrderId,

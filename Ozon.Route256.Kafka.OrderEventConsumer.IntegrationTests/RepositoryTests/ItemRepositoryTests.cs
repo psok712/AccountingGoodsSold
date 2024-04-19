@@ -18,7 +18,7 @@ public class ItemRepositoryTests
         _repository = fixture.ItemRepository;
         _dateTimeOffsetProviderFake = fixture.DateTimeOffsetProviderFaker;
     }
-    
+
     [Fact]
     public async Task AddIfNotExist_Success()
     {
