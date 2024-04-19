@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Ozon.Route256.Kafka.OrderEventConsumer.Domain.Common;
 using Ozon.Route256.Kafka.OrderEventConsumer.Infrastructure.Settings;
+using Polly;
 
 namespace Ozon.Route256.Kafka.OrderEventConsumer.Infrastructure.Kafka;
 
@@ -89,27 +90,26 @@ public sealed class KafkaAsyncConsumer<TKey, TValue> : IDisposable
         {
             token.ThrowIfCancellationRequested();
 
-            while (true)
+            var policy = Policy
+                .Handle<Exception>()
+                .RetryAsync(async (exception, retryCount) =>
+                {
+                    _logger.LogError(exception, $"Unhandled exception occurred. Retry count: {retryCount}");
+                    await Task.Delay(1000, token);
+                });
+
+            await policy.ExecuteAsync(async () =>
             {
-                try
-                {
-                    await _handler.Handle(consumeResults, token);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Unhandled exception occured");
-                    continue; // TODO: Polly.Retry
-                }
+                await _handler.Handle(consumeResults, token);
 
                 var partitionLastOffsets = consumeResults
                     .GroupBy(
                         r => r.Partition.Value,
                         (_, f) => f.MaxBy(p => p.Offset.Value));
 
-                foreach (var partitionLastOffset in partitionLastOffsets) _consumer.StoreOffset(partitionLastOffset);
-
-                break; // TODO: Polly.Retry
-            }
+                foreach (var partitionLastOffset in partitionLastOffsets)
+                    _consumer.StoreOffset(partitionLastOffset);
+            });
         }
     }
 
