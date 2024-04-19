@@ -15,49 +15,49 @@ namespace Ozon.Route256.Kafka.OrderEventConsumer.IntegrationTests.Fixtures;
 public class TestFixture
 {
     public readonly Mock<IDateTimeOffsetProvider> DateTimeOffsetProviderFaker = new();
-    
-    public IItemRepository ItemRepository { get; }
-    
+
     public TestFixture()
-        {
-            var config = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json")
-                .Build();
+    {
+        var config = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json")
+            .Build();
 
-            var host = Host.CreateDefaultBuilder()
-                .ConfigureServices(services =>
-                {
-                    services
-                        .AddInfrastructureRepositories()
-                        .AddInfrastructure(config)
-                        .AddUtils();
-                    
-                    var connectionString = config["ConnectionPostgresString"]!;
-                    services
-                        .AddFluentMigrator(
-                            connectionString,
-                            typeof(SqlMigration).Assembly);
+        var host = Host.CreateDefaultBuilder()
+            .ConfigureServices(services =>
+            {
+                services
+                    .AddInfrastructureRepositories()
+                    .AddInfrastructure(config)
+                    .AddUtils();
 
-                    services.Replace(
-                        new ServiceDescriptor(typeof(IDateTimeOffsetProvider), DateTimeOffsetProviderFaker.Object));
-                })
-                .Build();
-            
-            ClearDatabase(host);
-            using var scope = host.Services.CreateScope();
-            var runner = scope.ServiceProvider.GetRequiredService<IMigrationRunner>();
+                var connectionString = config["ConnectionPostgresString"]!;
+                services
+                    .AddFluentMigrator(
+                        connectionString,
+                        typeof(SqlMigration).Assembly);
 
-            runner.MigrateUp();
-            
-            var serviceProvider = scope.ServiceProvider;
-            ItemRepository = serviceProvider.GetRequiredService<IItemRepository>();
-        }
+                services.Replace(
+                    new ServiceDescriptor(typeof(IDateTimeOffsetProvider), DateTimeOffsetProviderFaker.Object));
+            })
+            .Build();
 
-        private static void ClearDatabase(IHost host)
-        {
-            using var scope = host.Services.CreateScope();
-            var runner = scope.ServiceProvider.GetRequiredService<IMigrationRunner>();
-            runner.MigrateDown(0);
-        }
+        ClearDatabase(host);
+        using var scope = host.Services.CreateScope();
+        var runner = scope.ServiceProvider.GetRequiredService<IMigrationRunner>();
+
+        runner.MigrateUp();
+
+        var serviceProvider = scope.ServiceProvider;
+        ItemRepository = serviceProvider.GetRequiredService<IItemRepository>();
+    }
+
+    public IItemRepository ItemRepository { get; }
+
+    private static void ClearDatabase(IHost host)
+    {
+        using var scope = host.Services.CreateScope();
+        var runner = scope.ServiceProvider.GetRequiredService<IMigrationRunner>();
+        runner.MigrateDown(0);
+    }
 }

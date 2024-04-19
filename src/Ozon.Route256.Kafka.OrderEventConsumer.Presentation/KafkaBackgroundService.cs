@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Ozon.Route256.Kafka.OrderEventConsumer.Domain.OrderProduce;
 using Ozon.Route256.Kafka.OrderEventConsumer.Infrastructure.Kafka;
 using Ozon.Route256.Kafka.OrderEventConsumer.Infrastructure.Settings;
 
@@ -13,26 +14,28 @@ namespace Ozon.Route256.Kafka.OrderEventConsumer.Presentation;
 
 public class KafkaBackgroundService : BackgroundService
 {
-    private readonly KafkaAsyncConsumer<Ignore, string> _consumer;
+    private readonly KafkaAsyncConsumer<long, OrderEventProduce> _consumer;
     private readonly ILogger<KafkaBackgroundService> _logger;
 
     public KafkaBackgroundService(
         IServiceProvider serviceProvider,
         ILogger<KafkaBackgroundService> logger,
         IOptions<KafkaOptions> kafkaOptions,
-        IOptions<KafkaConsumerOptions> kafkaConsumerOptions)
+        IOptions<KafkaConsumerOptions> kafkaConsumerOptions,
+        IHandler<long, OrderEventProduce> handler,
+        IDeserializer<OrderEventProduce> deserializerValue)
     {
         var kafkaOptionsValue = kafkaOptions.Value;
         _logger = logger;
-        var handler = serviceProvider.GetRequiredService<ItemHandler>();
-        _consumer = new KafkaAsyncConsumer<Ignore, string>(
+
+        _consumer = new KafkaAsyncConsumer<long, OrderEventProduce>(
             handler,
             kafkaOptionsValue.BootstrapServers,
             kafkaOptionsValue.GroupId,
             kafkaOptionsValue.Topic,
             null,
-            null,
-            serviceProvider.GetRequiredService<ILogger<KafkaAsyncConsumer<Ignore, string>>>(),
+            deserializerValue,
+            serviceProvider.GetRequiredService<ILogger<KafkaAsyncConsumer<long, OrderEventProduce>>>(),
             kafkaConsumerOptions);
     }
 

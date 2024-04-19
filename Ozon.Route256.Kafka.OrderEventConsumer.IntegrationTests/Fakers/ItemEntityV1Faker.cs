@@ -24,27 +24,37 @@ public static class ItemEntityV1Faker
     }
 
     public static ItemEntityV1 WithItemId(
-        this ItemEntityV1 src, 
+        this ItemEntityV1 src,
         long itemId)
-        => src with { ItemId = itemId };
-    
+    {
+        return src with { ItemId = itemId };
+    }
+
     public static ItemEntityV1 WithCanceled(
-        this ItemEntityV1 src, 
+        this ItemEntityV1 src,
         long canceled)
-        => src with { Canceled = canceled };
-    
+    {
+        return src with { Canceled = canceled };
+    }
+
     public static ItemEntityV1 WithCreated(
-        this ItemEntityV1 src, 
+        this ItemEntityV1 src,
         long created)
-        => src with { Created = created };
-    
+    {
+        return src with { Created = created };
+    }
+
     public static ItemEntityV1 WithDelivered(
-        this ItemEntityV1 src, 
+        this ItemEntityV1 src,
         long delivered)
-        => src with { Delivered = delivered };
-    
+    {
+        return src with { Delivered = delivered };
+    }
+
     public static ItemEntityV1 WithUpdatedAt(
-        this ItemEntityV1 src, 
+        this ItemEntityV1 src,
         DateTimeOffset updatedAt)
-        => src with { UpdatedAt = updatedAt};
+    {
+        return src with { UpdatedAt = updatedAt };
+    }
 }

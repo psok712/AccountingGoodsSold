@@ -28,7 +28,7 @@ select @ItemId, 0, 0, 0, @UpdatedAt
         var @params = new DynamicParameters();
         @params.Add("ItemId", itemId);
         @params.Add("UpdatedAt", dateTimeOffsetProvider.UtcNow);
-        
+
         await using var connection = await dataSource.OpenConnectionAsync(token);
         await connection.QueryAsync<long>(
             new CommandDefinition(sqlQuery, @params, cancellationToken: token));
@@ -67,11 +67,11 @@ update items
         var @params = new DynamicParameters();
         @params.Add("UpdateAt", dateTimeOffsetProvider.UtcNow);
         @params.Add("ItemId", itemId);
-        
+
         await using var connection = await dataSource.OpenConnectionAsync(token);
         await connection.QueryAsync<long>(
             new CommandDefinition(
-                sqlQuery,   
+                sqlQuery,
                 @params,
                 cancellationToken: token));
     }
@@ -88,11 +88,11 @@ update items
         var @params = new DynamicParameters();
         @params.Add("UpdateAt", dateTimeOffsetProvider.UtcNow);
         @params.Add("ItemId", itemId);
-        
+
         await using var connection = await dataSource.OpenConnectionAsync(token);
         await connection.QueryAsync<long>(
             new CommandDefinition(
-                sqlQuery,   
+                sqlQuery,
                 @params,
                 cancellationToken: token));
     }
@@ -109,11 +109,11 @@ update items
         var @params = new DynamicParameters();
         @params.Add("UpdateAt", dateTimeOffsetProvider.UtcNow);
         @params.Add("ItemId", itemId);
-        
+
         await using var connection = await dataSource.OpenConnectionAsync(token);
         await connection.QueryAsync<long>(
             new CommandDefinition(
-                sqlQuery,   
+                sqlQuery,
                 @params,
                 cancellationToken: token));
     }
