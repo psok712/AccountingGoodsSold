@@ -15,9 +15,19 @@ create table if not exists items
   , delivered  bigint      not null
   , canceled   bigint      not null
   , updated_at timestamp   not null);
+
+create table if not exists sales
+(
+      seller_id           bigint not null
+    , item_id             bigint not null
+    , currency            text not null
+    , sales               bigint not null
+    , constraint pk_sales primary key (seller_id, item_id)
+);
 ";
 
     protected override string GetDownSql(IServiceProvider services) => @"
 drop table if exists items;
+drop table if exists sales;
 ";
 }
