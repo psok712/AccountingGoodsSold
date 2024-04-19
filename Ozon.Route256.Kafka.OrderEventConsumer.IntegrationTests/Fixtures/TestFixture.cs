@@ -50,9 +50,12 @@ public class TestFixture
 
         var serviceProvider = scope.ServiceProvider;
         ItemRepository = serviceProvider.GetRequiredService<IItemRepository>();
+        SalesRepository = serviceProvider.GetRequiredService<ISalesRepository>();
     }
 
     public IItemRepository ItemRepository { get; }
+
+    public ISalesRepository SalesRepository { get; }
 
     private static void ClearDatabase(IHost host)
     {
