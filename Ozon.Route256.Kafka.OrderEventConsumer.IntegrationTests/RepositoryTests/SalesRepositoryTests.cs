@@ -6,28 +6,20 @@ using Ozon.Route256.Kafka.OrderEventConsumer.IntegrationTests.Fixtures;
 namespace Ozon.Route256.Kafka.OrderEventConsumer.IntegrationTests.RepositoryTests;
 
 [Collection(nameof(TestFixture))]
-public class SalesRepositoryTests
+public class SalesRepositoryTests(TestFixture fixture)
 {
-    private readonly ISalesRepository _repository;
-
-    public SalesRepositoryTests(TestFixture fixture)
-    {
-        _repository = fixture.SalesRepository;
-    }
+    private readonly ISalesRepository _repository = fixture.SalesRepository;
 
     [Fact]
-    public async Task AddIfNotExist_Success()
+    public async Task AddUpdateSale_Success()
     {
         // Arrange
-        var sale = SalesAddModelFaker.Generate().First();
-        var expectedSale = SalesEntityV1Faker.Generate().First()
-            .WithItemId(sale.ItemId)
-            .WithSellerId(sale.SellerId)
-            .WithCurrency(sale.Currency);
+        const long quantity = 5;
+        var sale = SalesEntityV1Faker.Generate().First();
 
 
         // Act
-        await _repository.AddIfNotExist(sale, default);
+        await _repository.AddUpdateSale(sale, quantity, token: default);
 
 
         // Asserts
@@ -35,19 +27,19 @@ public class SalesRepositoryTests
             .WithItemId(sale.ItemId)
             .WithSellerId(sale.SellerId);
         var resultSale = await _repository.Get(getModel, default);
-        resultSale.Should().BeEquivalentTo(expectedSale);
+        resultSale.ItemId.Should().Be(sale.ItemId);
+        resultSale.Price.Should().Be(sale.Price * quantity);
+        resultSale.SellerId.Should().Be(sale.SellerId);
+        resultSale.Currency.Should().Be(sale.Currency);
     }
 
     [Fact]
     public async Task Get_AddSale_ShouldReturnThisSale()
     {
         // Arrange
-        var sale = SalesAddModelFaker.Generate().First();
-        await _repository.AddIfNotExist(sale, default);
-        var expectedSale = SalesEntityV1Faker.Generate().First()
-            .WithItemId(sale.ItemId)
-            .WithSellerId(sale.SellerId)
-            .WithCurrency(sale.Currency);
+        const long quantity = 5;
+        var sale = SalesEntityV1Faker.Generate().First();
+        await _repository.AddUpdateSale(sale, quantity, token: default);
 
 
         // Act
@@ -58,30 +50,10 @@ public class SalesRepositoryTests
 
 
         // Asserts
-        resultSale.Should().BeEquivalentTo(expectedSale);
-    }
-
-    [Fact]
-    public async Task IncSale_Success()
-    {
-        // Arrange
-        var saleAdd = SalesAddModelFaker.Generate().First();
-        await _repository.AddIfNotExist(saleAdd, default);
-
-
-        // Act
-        var salesEntity = SalesEntityV1Faker.Generate().First()
-            .WithItemId(saleAdd.ItemId)
-            .WithSellerId(saleAdd.SellerId);
-        var expectedSales = salesEntity.Price;
-        await _repository.IncSale(salesEntity, default);
-
-
-        // Asserts
-        var getModel = SalesGetModelFaker.Generate().First()
-            .WithItemId(saleAdd.ItemId)
-            .WithSellerId(saleAdd.SellerId);
-        var sale = await _repository.Get(getModel, default);
-        sale.Price.Should().Be(expectedSales);
+        resultSale.Should().BeEquivalentTo(sale);
+        resultSale.ItemId.Should().Be(sale.ItemId);
+        resultSale.Price.Should().Be(sale.Price * quantity);
+        resultSale.SellerId.Should().Be(sale.SellerId);
+        resultSale.Currency.Should().Be(sale.Currency);
     }
 }

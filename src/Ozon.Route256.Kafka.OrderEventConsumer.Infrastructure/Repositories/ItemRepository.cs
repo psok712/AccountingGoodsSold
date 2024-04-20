@@ -5,6 +5,7 @@ using Dapper;
 using Npgsql;
 using Ozon.Route256.Kafka.OrderEventConsumer.Domain.Entities;
 using Ozon.Route256.Kafka.OrderEventConsumer.Domain.Interfaces;
+using Ozon.Route256.Kafka.OrderEventConsumer.Domain.Models;
 using Utils.Providers.Interfaces;
 
 namespace Ozon.Route256.Kafka.OrderEventConsumer.Infrastructure.Repositories;
@@ -17,16 +18,64 @@ public sealed class ItemRepository(
 {
     private const int DefaultTimeoutInSeconds = 5;
 
-    public async Task AddIfNotExist(long itemId, CancellationToken token)
+    public async Task AddUpdateCreated(ItemUpdateModel updateModel, CancellationToken token)
     {
         const string sqlQuery = @"
 insert into items (item_id, created, delivered, canceled, updated_at) 
-select @ItemId, 0, 0, 0, @UpdatedAt
-    on conflict (item_id) do nothing;
+select @ItemId, @Quantity, 0, 0, @UpdatedAt
+    on conflict (item_id) 
+    do update set 
+       created = items.created + @Quantity
+     , updated_at = @UpdatedAt
 ";
 
         var @params = new DynamicParameters();
-        @params.Add("ItemId", itemId);
+        @params.Add("ItemId", updateModel.ItemId);
+        @params.Add("Quantity", updateModel.Quantity);
+        @params.Add("UpdatedAt", dateTimeOffsetProvider.UtcNow);
+
+        await using var connection = await dataSource.OpenConnectionAsync(token);
+        await connection.QueryAsync<long>(
+            new CommandDefinition(sqlQuery, @params, cancellationToken: token));
+    }
+
+    public async Task AddUpdateCanceled(ItemUpdateModel updateModel, CancellationToken token)
+    {
+        const string sqlQuery = @"
+insert into items (item_id, created, delivered, canceled, updated_at) 
+select @ItemId, -@Quantity, 0, @Quantity, @UpdatedAt
+    on conflict (item_id) 
+    do update set 
+       created = items.created - @Quantity
+     , canceled = items.canceled + @Quantity
+     , updated_at = @UpdatedAt
+";
+
+        var @params = new DynamicParameters();
+        @params.Add("ItemId", updateModel.ItemId);
+        @params.Add("Quantity", updateModel.Quantity);
+        @params.Add("UpdatedAt", dateTimeOffsetProvider.UtcNow);
+
+        await using var connection = await dataSource.OpenConnectionAsync(token);
+        await connection.QueryAsync<long>(
+            new CommandDefinition(sqlQuery, @params, cancellationToken: token));
+    }
+
+    public async Task AddUpdateDelivered(ItemUpdateModel updateModel, CancellationToken token)
+    {
+        const string sqlQuery = @"
+insert into items (item_id, created, delivered, canceled, updated_at) 
+select @ItemId, -@Quantity, @Quantity, 0, @UpdatedAt
+    on conflict (item_id) 
+    do update set 
+       created = items.created - @Quantity
+     , delivered = items.delivered + @Quantity
+     , updated_at = @UpdatedAt
+";
+
+        var @params = new DynamicParameters();
+        @params.Add("ItemId", updateModel.ItemId);
+        @params.Add("Quantity", updateModel.Quantity);
         @params.Add("UpdatedAt", dateTimeOffsetProvider.UtcNow);
 
         await using var connection = await dataSource.OpenConnectionAsync(token);
@@ -44,8 +93,7 @@ select *
 
         var @params = new DynamicParameters();
         @params.Add("ItemId", itemId);
-
-
+        
         var cmd = new CommandDefinition(
             sqlQuery,
             @params,
@@ -61,48 +109,6 @@ select *
         const string sqlQuery = @"
 update items
    set created = created + 1
-     , updated_at = @UpdateAt
- where item_id = @ItemId
-";
-        var @params = new DynamicParameters();
-        @params.Add("UpdateAt", dateTimeOffsetProvider.UtcNow);
-        @params.Add("ItemId", itemId);
-
-        await using var connection = await dataSource.OpenConnectionAsync(token);
-        await connection.QueryAsync<long>(
-            new CommandDefinition(
-                sqlQuery,
-                @params,
-                cancellationToken: token));
-    }
-
-    public async Task IncCanceled(long itemId, CancellationToken token)
-    {
-        const string sqlQuery = @"
-update items
-   set created = created - 1
-     , canceled = canceled + 1
-     , updated_at = @UpdateAt
- where item_id = @ItemId
-";
-        var @params = new DynamicParameters();
-        @params.Add("UpdateAt", dateTimeOffsetProvider.UtcNow);
-        @params.Add("ItemId", itemId);
-
-        await using var connection = await dataSource.OpenConnectionAsync(token);
-        await connection.QueryAsync<long>(
-            new CommandDefinition(
-                sqlQuery,
-                @params,
-                cancellationToken: token));
-    }
-
-    public async Task IncDelivered(long itemId, CancellationToken token)
-    {
-        const string sqlQuery = @"
-update items
-   set created = created - 1
-     , delivered = items.delivered + 1
      , updated_at = @UpdateAt
  where item_id = @ItemId
 ";

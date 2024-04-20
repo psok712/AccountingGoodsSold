@@ -13,45 +13,26 @@ public class SalesRepository(NpgsqlDataSource dataSource) : ISalesRepository
 {
     private const int DefaultTimeoutInSeconds = 5;
 
-    public async Task AddIfNotExist(SalesAddModel sale, CancellationToken token)
+    public async Task AddUpdateSale(SalesEntityV1 sale, long quantity, CancellationToken token)
     {
         const string sqlQuery = @"
 insert into sales (seller_id, item_id, currency, sales) 
-select @SellerId, @ItemId, @Currency, 0
-    on conflict (seller_id, item_id, currency) do nothing;
+select @SellerId, @ItemId, @Currency, @Price * @Quantity
+    on conflict (seller_id, item_id, currency)
+    do update set 
+       sales = sales.sales + @Price * @Quantity
 ";
-
-        var @params = new DynamicParameters();
-        @params.Add("SellerId", sale.SellerId);
-        @params.Add("ItemId", sale.ItemId);
-        @params.Add("Currency", sale.Currency);
-
-        await using var connection = await dataSource.OpenConnectionAsync(token);
-        await connection.QueryAsync<long>(
-            new CommandDefinition(sqlQuery, @params, cancellationToken: token));
-    }
-
-    public async Task IncSale(SalesEntityV1 sale, CancellationToken token)
-    {
-        const string sqlQuery = @"
-update sales
-   set sales = sales + @Price
- where seller_id = @SellerId
-   and item_id = @ItemId
-   and currency = @Currency
-";
+        
         var @params = new DynamicParameters();
         @params.Add("SellerId", sale.SellerId);
         @params.Add("ItemId", sale.ItemId);
         @params.Add("Currency", sale.Currency);
         @params.Add("Price", sale.Price);
+        @params.Add("Quantity", quantity);
 
         await using var connection = await dataSource.OpenConnectionAsync(token);
         await connection.QueryAsync<long>(
-            new CommandDefinition(
-                sqlQuery,
-                @params,
-                cancellationToken: token));
+            new CommandDefinition(sqlQuery, @params, cancellationToken: token));
     }
 
     public async Task<SalesEntityV1> Get(SalesGetModel sale, CancellationToken token)
