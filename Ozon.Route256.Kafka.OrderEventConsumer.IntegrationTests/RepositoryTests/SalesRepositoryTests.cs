@@ -19,7 +19,7 @@ public class SalesRepositoryTests(TestFixture fixture)
 
 
         // Act
-        await _repository.AddUpdateSale(sale, quantity, token: default);
+        await _repository.AddUpdateSale(sale, quantity, default);
 
 
         // Asserts
@@ -39,7 +39,7 @@ public class SalesRepositoryTests(TestFixture fixture)
         // Arrange
         const long quantity = 5;
         var sale = SalesEntityV1Faker.Generate().First();
-        await _repository.AddUpdateSale(sale, quantity, token: default);
+        await _repository.AddUpdateSale(sale, quantity, default);
 
 
         // Act
