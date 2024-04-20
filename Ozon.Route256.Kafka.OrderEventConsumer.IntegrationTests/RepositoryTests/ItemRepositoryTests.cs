@@ -30,18 +30,18 @@ public class ItemRepositoryTests(TestFixture fixture)
 
 
         // Act
-        await _repository.AddUpdateCreated(updateModel, token: default);
+        await _repository.AddUpdateCreated(updateModel, default);
 
 
         // Asserts
-        var item = await _repository.Get(updateModel.ItemId, token: default);
+        var item = await _repository.Get(updateModel.ItemId, default);
         item.ItemId.Should().Be(expectedItem.ItemId);
         item.Canceled.Should().Be(expectedItem.Canceled);
         item.Created.Should().Be(expectedItem.Created + updateModel.Quantity);
         item.Delivered.Should().Be(expectedItem.Delivered);
         Assert.True(Math.Abs(item.UpdatedAt.LocalDateTime.Ticks - expectedItem.UpdatedAt.UtcTicks) < 10);
     }
-    
+
     [Fact]
     public async Task AddUpdateCanceled_Success()
     {
@@ -59,11 +59,11 @@ public class ItemRepositoryTests(TestFixture fixture)
 
 
         // Act
-        await _repository.AddUpdateCanceled(updateModel, token: default);
+        await _repository.AddUpdateCanceled(updateModel, default);
 
 
         // Asserts
-        var item = await _repository.Get(updateModel.ItemId, token: default);
+        var item = await _repository.Get(updateModel.ItemId, default);
         item.ItemId.Should().Be(expectedItem.ItemId);
         item.Canceled.Should().Be(expectedItem.Canceled + updateModel.Quantity);
         item.Created.Should().Be(expectedItem.Created - updateModel.Quantity);
@@ -88,18 +88,18 @@ public class ItemRepositoryTests(TestFixture fixture)
 
 
         // Act
-        await _repository.AddUpdateDelivered(updateModel, token: default);
+        await _repository.AddUpdateDelivered(updateModel, default);
 
 
         // Asserts
-        var item = await _repository.Get(updateModel.ItemId, token: default);
+        var item = await _repository.Get(updateModel.ItemId, default);
         item.ItemId.Should().Be(expectedItem.ItemId);
         item.Canceled.Should().Be(expectedItem.Canceled);
         item.Created.Should().Be(expectedItem.Created - updateModel.Quantity);
         item.Delivered.Should().Be(expectedItem.Delivered + updateModel.Quantity);
         Assert.True(Math.Abs(item.UpdatedAt.LocalDateTime.Ticks - expectedItem.UpdatedAt.UtcTicks) < 10);
     }
-    
+
     [Fact]
     public async Task Get_AddItem_ShouldReturnThisItem()
     {
@@ -113,11 +113,11 @@ public class ItemRepositoryTests(TestFixture fixture)
             .WithUpdatedAt(updatedTime);
         var updateModel = ItemUpdateModelFaker.Generate().First()
             .WithItemId(expectedItem.ItemId);
-        await _repository.AddUpdateCreated(updateModel, token: default);
+        await _repository.AddUpdateCreated(updateModel, default);
 
 
         // Act
-        var item = await _repository.Get(updateModel.ItemId, token: default);
+        var item = await _repository.Get(updateModel.ItemId, default);
 
 
         // Asserts

@@ -11,9 +11,9 @@ using Ozon.Route256.Kafka.OrderEventConsumer.Domain.ValueObjects;
 namespace Ozon.Route256.Kafka.OrderEventConsumer.Infrastructure.Services;
 
 public class KafkaService(
-    IItemRepository itemRepository, 
+    IItemRepository itemRepository,
     ISalesRepository salesRepository
-    ) : IKafkaService
+) : IKafkaService
 {
     public async Task OrderProcessing(OrderEvent orderEvent, CancellationToken token)
     {
@@ -34,7 +34,7 @@ public class KafkaService(
                 case Status.Delivered:
                 {
                     await itemRepository.AddUpdateDelivered(updateModel, token);
-                    
+
                     await salesRepository.AddUpdateSale(CreateSalesEntity(position), updateModel.Quantity, token);
                     break;
                 }

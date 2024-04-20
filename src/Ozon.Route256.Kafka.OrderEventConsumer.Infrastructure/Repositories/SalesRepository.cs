@@ -22,7 +22,7 @@ select @SellerId, @ItemId, @Currency, @Price * @Quantity
     do update set 
        sales = sales.sales + @Price * @Quantity
 ";
-        
+
         var @params = new DynamicParameters();
         @params.Add("SellerId", sale.SellerId);
         @params.Add("ItemId", sale.ItemId);

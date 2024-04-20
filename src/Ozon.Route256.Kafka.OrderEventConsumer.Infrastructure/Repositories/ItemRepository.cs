@@ -93,7 +93,7 @@ select *
 
         var @params = new DynamicParameters();
         @params.Add("ItemId", itemId);
-        
+
         var cmd = new CommandDefinition(
             sqlQuery,
             @params,

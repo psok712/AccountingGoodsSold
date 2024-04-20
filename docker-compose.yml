@@ -43,7 +43,7 @@ services:
   
   consumer:
     image: ozon.route256.kafka.ordereventconsumer.presentation
-      
+
 
 volumes:
   dbdata:
