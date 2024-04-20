@@ -70,11 +70,11 @@ public class SalesRepositoryTests
 
 
         // Act
-        var incModel = SalesIncModelFaker.Generate().First()
+        var salesEntity = SalesEntityV1Faker.Generate().First()
             .WithItemId(saleAdd.ItemId)
             .WithSellerId(saleAdd.SellerId);
-        var expectedSales = incModel.Price;
-        await _repository.IncSale(incModel, default);
+        var expectedSales = salesEntity.Price;
+        await _repository.IncSale(salesEntity, default);
 
 
         // Asserts
@@ -82,6 +82,6 @@ public class SalesRepositoryTests
             .WithItemId(saleAdd.ItemId)
             .WithSellerId(saleAdd.SellerId);
         var sale = await _repository.Get(getModel, default);
-        sale.Sales.Should().Be(expectedSales);
+        sale.Price.Should().Be(expectedSales);
     }
 }

@@ -12,7 +12,7 @@ public static class SalesEntityV1Faker
         .RuleFor(x => x.SellerId, f => f.Random.Long(0L))
         .RuleFor(x => x.ItemId, f => f.Random.Long(0L))
         .RuleFor(x => x.Currency, f => f.Random.Word())
-        .RuleFor(x => x.Sales, _ => 0L);
+        .RuleFor(x => x.Price, _ => 0L);
 
     public static SalesEntityV1[] Generate(int count = 1)
     {
@@ -47,6 +47,6 @@ public static class SalesEntityV1Faker
         this SalesEntityV1 src,
         long sales)
     {
-        return src with { Sales = sales };
+        return src with { Price = sales };
     }
 }

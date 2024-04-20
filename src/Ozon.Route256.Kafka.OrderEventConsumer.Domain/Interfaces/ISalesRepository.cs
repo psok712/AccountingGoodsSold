@@ -9,7 +9,7 @@ public interface ISalesRepository
 {
     Task AddIfNotExist(SalesAddModel sale, CancellationToken token);
 
-    Task IncSale(SalesIncModel sale, CancellationToken token);
+    Task IncSale(SalesEntityV1 sale, CancellationToken token);
 
     Task<SalesEntityV1> Get(SalesGetModel sale, CancellationToken token);
 }

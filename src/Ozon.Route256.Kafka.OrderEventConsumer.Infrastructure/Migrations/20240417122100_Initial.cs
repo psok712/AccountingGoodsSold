@@ -22,7 +22,7 @@ create table if not exists sales
     , item_id             bigint not null
     , currency            text not null
     , sales               decimal not null
-    , constraint pk_sales primary key (seller_id, item_id)
+    , constraint pk_sales primary key (seller_id, item_id, currency)
 );
 ";
 

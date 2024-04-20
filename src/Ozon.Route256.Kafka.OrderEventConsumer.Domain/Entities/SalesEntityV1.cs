@@ -8,5 +8,5 @@ public record SalesEntityV1
 
     public required string Currency { get; init; }
 
-    public required decimal Sales { get; init; }
+    public required decimal Price { get; init; }
 }
