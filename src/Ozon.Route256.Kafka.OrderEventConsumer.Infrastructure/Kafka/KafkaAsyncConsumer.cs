@@ -20,6 +20,7 @@ public sealed class KafkaAsyncConsumer<TKey, TValue> : IDisposable
     private readonly int _channelCapacity;
     private readonly IConsumer<TKey, TValue> _consumer;
     private readonly IHandler<TKey, TValue> _handler;
+    private readonly KafkaConsumerOptions _options;
 
     private readonly ILogger<KafkaAsyncConsumer<TKey, TValue>> _logger;
 
@@ -33,6 +34,7 @@ public sealed class KafkaAsyncConsumer<TKey, TValue> : IDisposable
         ILogger<KafkaAsyncConsumer<TKey, TValue>> logger,
         IOptions<KafkaConsumerOptions> kafkaConsumerOptions)
     {
+        _options = kafkaConsumerOptions.Value;
         _channelCapacity = kafkaConsumerOptions.Value.ChannelCapacity;
         _bufferDelay = TimeSpan.FromSeconds(kafkaConsumerOptions.Value.BufferDelaySecond);
 
@@ -92,7 +94,7 @@ public sealed class KafkaAsyncConsumer<TKey, TValue> : IDisposable
 
             var policy = Policy
                 .Handle<Exception>()
-                .RetryAsync(async (exception, retryCount) =>
+                .RetryAsync(retryCount: _options.RetryCount, async (exception, retryCount) =>
                 {
                     _logger.LogError(exception, $"Unhandled exception occurred. Retry count: {retryCount}");
                     await Task.Delay(1000, token);
