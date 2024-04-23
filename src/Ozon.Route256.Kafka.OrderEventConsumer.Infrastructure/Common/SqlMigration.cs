@@ -1,5 +1,4 @@
 ﻿using System;
-
 using FluentMigrator;
 using FluentMigrator.Expressions;
 using FluentMigrator.Infrastructure;
@@ -15,10 +14,18 @@ public abstract class SqlMigration : IMigration
         context.Expressions.Add(new ExecuteSqlStatementExpression { SqlStatement = GetUpSql(context.ServiceProvider) });
     }
 
-    public void GetDownExpressions(IMigrationContext context) => throw new NotSupportedException();
+    public void GetDownExpressions(IMigrationContext context)
+    {
+        _ = context ?? throw new ArgumentNullException(nameof(context));
 
-    protected abstract string GetUpSql(IServiceProvider services);
+        context.Expressions.Add(
+            new ExecuteSqlStatementExpression { SqlStatement = GetDownSql(context.ServiceProvider) });
+    }
 
     object IMigration.ApplicationContext => throw new NotSupportedException();
     string IMigration.ConnectionString => throw new NotSupportedException();
+
+    protected abstract string GetUpSql(IServiceProvider services);
+
+    protected abstract string GetDownSql(IServiceProvider services);
 }

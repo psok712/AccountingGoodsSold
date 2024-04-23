@@ -9,7 +9,8 @@ namespace Ozon.Route256.Kafka.OrderEventConsumer.Domain.Common;
 
 public static class AsyncEnumerableExtensions
 {
-    public static IAsyncEnumerable<IReadOnlyList<T>> Buffer<T>(this IAsyncEnumerable<T> source, int count, TimeSpan delay = default)
+    public static IAsyncEnumerable<IReadOnlyList<T>> Buffer<T>(this IAsyncEnumerable<T> source, int count,
+        TimeSpan delay = default)
     {
         if (source is null)
             throw new ArgumentNullException(nameof(source));
@@ -21,7 +22,7 @@ public static class AsyncEnumerableExtensions
 
         async IAsyncEnumerator<IReadOnlyList<T>> BufferCore(CancellationToken cancellationToken)
         {
-            var cancellationSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, token2: default);
+            var cancellationSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, default);
             var enumerator = source
                 .WithCancellation(cancellationSource.Token)
                 .ConfigureAwait(false)

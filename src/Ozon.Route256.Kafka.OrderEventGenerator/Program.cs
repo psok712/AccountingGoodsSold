@@ -1,6 +1,5 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
-
 using Ozon.Route256.Kafka.OrderEventGenerator;
 using Ozon.Route256.Kafka.OrderEventGenerator.Contracts;
 using Ozon.Route256.Kafka.OrderEventGenerator.Kafka;
@@ -14,8 +13,9 @@ using var cts = new CancellationTokenSource(timeoutMs);
 var publisher = new KafkaPublisher<long, OrderEvent>(
     bootstrapServers,
     topicName,
-    keySerializer: null,
-    new SystemTextJsonSerializer<OrderEvent>(new JsonSerializerOptions { Converters = { new JsonStringEnumConverter() } }));
+    null,
+    new SystemTextJsonSerializer<OrderEvent>(new JsonSerializerOptions
+        { Converters = { new JsonStringEnumConverter() } }));
 
 var generator = new OrderEventGenerator();
 

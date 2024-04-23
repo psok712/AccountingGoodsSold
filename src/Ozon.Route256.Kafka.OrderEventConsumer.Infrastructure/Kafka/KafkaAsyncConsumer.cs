@@ -5,18 +5,22 @@ using System.Threading.Channels;
 using System.Threading.Tasks;
 using Confluent.Kafka;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Ozon.Route256.Kafka.OrderEventConsumer.Domain.Common;
+using Ozon.Route256.Kafka.OrderEventConsumer.Infrastructure.Settings;
+using Polly;
 
 namespace Ozon.Route256.Kafka.OrderEventConsumer.Infrastructure.Kafka;
 
 public sealed class KafkaAsyncConsumer<TKey, TValue> : IDisposable
 {
-    private const int ChannelCapacity = 10; // TODO: IOptions
-    private readonly TimeSpan _bufferDelay = TimeSpan.FromSeconds(1); // TODO: IOptions
+    private readonly TimeSpan _bufferDelay;
 
     private readonly Channel<ConsumeResult<TKey, TValue>> _channel;
+    private readonly int _channelCapacity;
     private readonly IConsumer<TKey, TValue> _consumer;
     private readonly IHandler<TKey, TValue> _handler;
+    private readonly KafkaConsumerOptions _options;
 
     private readonly ILogger<KafkaAsyncConsumer<TKey, TValue>> _logger;
 
@@ -27,8 +31,13 @@ public sealed class KafkaAsyncConsumer<TKey, TValue> : IDisposable
         string topic,
         IDeserializer<TKey>? keyDeserializer,
         IDeserializer<TValue>? valueDeserializer,
-        ILogger<KafkaAsyncConsumer<TKey, TValue>> logger)
+        ILogger<KafkaAsyncConsumer<TKey, TValue>> logger,
+        IOptions<KafkaConsumerOptions> kafkaConsumerOptions)
     {
+        _options = kafkaConsumerOptions.Value;
+        _channelCapacity = kafkaConsumerOptions.Value.ChannelCapacity;
+        _bufferDelay = TimeSpan.FromSeconds(kafkaConsumerOptions.Value.BufferDelaySecond);
+
         var builder = new ConsumerBuilder<TKey, TValue>(
             new ConsumerConfig
             {
@@ -39,21 +48,15 @@ public sealed class KafkaAsyncConsumer<TKey, TValue> : IDisposable
                 EnableAutoOffsetStore = false
             });
 
-        if (keyDeserializer is not null)
-        {
-            builder.SetKeyDeserializer(keyDeserializer);
-        }
+        if (keyDeserializer is not null) builder.SetKeyDeserializer(keyDeserializer);
 
-        if (valueDeserializer is not null)
-        {
-            builder.SetValueDeserializer(valueDeserializer);
-        }
+        if (valueDeserializer is not null) builder.SetValueDeserializer(valueDeserializer);
 
         _handler = handler;
         _logger = logger;
 
         _channel = Channel.CreateBounded<ConsumeResult<TKey, TValue>>(
-            new BoundedChannelOptions(ChannelCapacity)
+            new BoundedChannelOptions(_channelCapacity)
             {
                 SingleWriter = true,
                 SingleReader = true,
@@ -63,6 +66,11 @@ public sealed class KafkaAsyncConsumer<TKey, TValue> : IDisposable
 
         _consumer = builder.Build();
         _consumer.Subscribe(topic);
+    }
+
+    public void Dispose()
+    {
+        _consumer.Close();
     }
 
     public Task Consume(CancellationToken token)
@@ -79,22 +87,22 @@ public sealed class KafkaAsyncConsumer<TKey, TValue> : IDisposable
 
         await foreach (var consumeResults in _channel.Reader
                            .ReadAllAsync(token)
-                           .Buffer(ChannelCapacity, _bufferDelay)
+                           .Buffer(_channelCapacity, _bufferDelay)
                            .WithCancellation(token))
         {
             token.ThrowIfCancellationRequested();
 
-            while (true)
+            var policy = Policy
+                .Handle<Exception>()
+                .RetryAsync(retryCount: _options.RetryCount, async (exception, retryCount) =>
+                {
+                    _logger.LogError(exception, $"Unhandled exception occurred. Retry count: {retryCount}");
+                    await Task.Delay(1000, token);
+                });
+
+            await policy.ExecuteAsync(async () =>
             {
-                try
-                {
-                    await _handler.Handle(consumeResults, token);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Unhandled exception occured");
-                    continue; // TODO: Polly.Retry
-                }
+                await _handler.Handle(consumeResults, token);
 
                 var partitionLastOffsets = consumeResults
                     .GroupBy(
@@ -102,12 +110,8 @@ public sealed class KafkaAsyncConsumer<TKey, TValue> : IDisposable
                         (_, f) => f.MaxBy(p => p.Offset.Value));
 
                 foreach (var partitionLastOffset in partitionLastOffsets)
-                {
                     _consumer.StoreOffset(partitionLastOffset);
-                }
-
-                break; // TODO: Polly.Retry
-            }
+            });
         }
     }
 
@@ -126,6 +130,4 @@ public sealed class KafkaAsyncConsumer<TKey, TValue> : IDisposable
 
         _channel.Writer.Complete();
     }
-
-    public void Dispose() => _consumer.Close();
 }

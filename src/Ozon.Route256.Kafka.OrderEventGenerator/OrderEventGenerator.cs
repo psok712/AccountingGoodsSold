@@ -1,5 +1,4 @@
 ﻿using AutoFixture;
-
 using Ozon.Route256.Kafka.OrderEventGenerator.Contracts;
 
 namespace Ozon.Route256.Kafka.OrderEventGenerator;
@@ -12,20 +11,20 @@ internal sealed class OrderEventGenerator
         var sentOrders = new Dictionary<long, OrderEvent>(eventsCount);
 
         var sellerIds = Enumerable
-            .Range(start: 0, count: 20_000)
-            .Select(_ => (long)rnd.Next(minValue: 100_000, maxValue: 300_000) * 1_000_000)
+            .Range(0, 20_000)
+            .Select(_ => (long)rnd.Next(100_000, 300_000) * 1_000_000)
             .ToArray();
 
         var currencies = new[] { "RUB", "KZT" };
         var items = Enumerable
-            .Range(start: 0, count: 300_000)
-            .Select(_ => (long)rnd.Next(minValue: 1, maxValue: 999_999))
+            .Range(0, 300_000)
+            .Select(_ => (long)rnd.Next(1, 999_999))
             .Select(
                 shortId => (
                     Id: shortId + sellerIds[rnd.Next(sellerIds.Length)],
                     Currency: currencies[rnd.Next(currencies.Length)],
-                    PriceUnits: rnd.Next(minValue: 300, maxValue: 10_000),
-                    PriceNanos: rnd.Next(minValue: 0, maxValue: 99) * 10_000_000))
+                    PriceUnits: rnd.Next(300, 10_000),
+                    PriceNanos: rnd.Next(0, 99) * 10_000_000))
             .ToArray();
 
         var fixture = new Fixture();
@@ -46,7 +45,7 @@ internal sealed class OrderEventGenerator
                                     Units = item.PriceUnits,
                                     Nanos = item.PriceNanos
                                 },
-                                Quantity = rnd.Next(minValue: 1, maxValue: 20)
+                                Quantity = rnd.Next(1, 20)
                             };
                         })
                     .OmitAutoProperties());
@@ -60,14 +59,11 @@ internal sealed class OrderEventGenerator
 
         while (events < eventsCount)
         {
-            var orderId = rnd.Next(minValue: 1, maxValue: (int)(eventsCount * 1.5));
+            var orderId = rnd.Next(1, (int)(eventsCount * 1.5));
 
             if (sentOrders.TryGetValue(orderId, out var sentOrderEvent))
             {
-                if (sentOrderEvent.Status != OrderEvent.OrderStatus.Created)
-                {
-                    continue;
-                }
+                if (sentOrderEvent.Status != OrderEvent.OrderStatus.Created) continue;
 
                 sentOrderEvent.Status = rnd.NextSingle() < 0.7
                     ? OrderEvent.OrderStatus.Delivered
@@ -85,6 +81,7 @@ internal sealed class OrderEventGenerator
 
                 yield return orderEvent;
             }
+
             ++events;
         }
     }
