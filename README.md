@@ -1,4 +1,4 @@
-# Ozon Route 256 — Kafka Homework
+# Kafka Homework
 
 ## Домашнее задание
 
