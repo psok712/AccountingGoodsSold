@@ -13,17 +13,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F769AE4F-2AA
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{2B185019-54A5-4DB0-88AB-11EC9ED77E9F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ozon.Route256.Kafka.OrderEventGenerator", "src\Ozon.Route256.Kafka.OrderEventGenerator\Ozon.Route256.Kafka.OrderEventGenerator.csproj", "{13551DB2-CCA4-4488-B001-AFED814C63FE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kafka.OrderEventGenerator", "src\Kafka.OrderEventGenerator\Kafka.OrderEventGenerator.csproj", "{13551DB2-CCA4-4488-B001-AFED814C63FE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ozon.Route256.Kafka.OrderEventConsumer.Presentation", "src\Ozon.Route256.Kafka.OrderEventConsumer.Presentation\Ozon.Route256.Kafka.OrderEventConsumer.Presentation.csproj", "{BEAC44F4-66E2-44A8-8FF6-27867483D450}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kafka.OrderEventConsumer.Presentation", "src\Kafka.OrderEventConsumer.Presentation\Kafka.OrderEventConsumer.Presentation.csproj", "{BEAC44F4-66E2-44A8-8FF6-27867483D450}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ozon.Route256.Kafka.OrderEventConsumer.Domain", "src\Ozon.Route256.Kafka.OrderEventConsumer.Domain\Ozon.Route256.Kafka.OrderEventConsumer.Domain.csproj", "{EF6F18C1-F01F-4E71-995E-8A79E849ADEB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kafka.OrderEventConsumer.Domain", "src\Kafka.OrderEventConsumer.Domain\Kafka.OrderEventConsumer.Domain.csproj", "{EF6F18C1-F01F-4E71-995E-8A79E849ADEB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ozon.Route256.Kafka.OrderEventConsumer.Infrastructure", "src\Ozon.Route256.Kafka.OrderEventConsumer.Infrastructure\Ozon.Route256.Kafka.OrderEventConsumer.Infrastructure.csproj", "{7A04D667-814D-4D93-A2AC-A35D7A047DBF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kafka.OrderEventConsumer.Infrastructure", "src\Kafka.OrderEventConsumer.Infrastructure\Kafka.OrderEventConsumer.Infrastructure.csproj", "{7A04D667-814D-4D93-A2AC-A35D7A047DBF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ozon.Route256.Kafka.OrderEventConsumer.Utils", "src\Ozon.Route256.Kafka.OrderEventConsumer.Utils\Ozon.Route256.Kafka.OrderEventConsumer.Utils.csproj", "{B17C85E7-46E7-4349-B4CB-8BABE8B60B78}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kafka.OrderEventConsumer.Utils", "src\Kafka.OrderEventConsumer.Utils\Kafka.OrderEventConsumer.Utils.csproj", "{B17C85E7-46E7-4349-B4CB-8BABE8B60B78}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ozon.Route256.Kafka.OrderEventConsumer.IntegrationTests", "Ozon.Route256.Kafka.OrderEventConsumer.IntegrationTests\Ozon.Route256.Kafka.OrderEventConsumer.IntegrationTests.csproj", "{347D1A3A-EAA6-4C35-9532-091B986825D9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kafka.OrderEventConsumer.IntegrationTests", "Kafka.OrderEventConsumer.IntegrationTests\Kafka.OrderEventConsumer.IntegrationTests.csproj", "{347D1A3A-EAA6-4C35-9532-091B986825D9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
